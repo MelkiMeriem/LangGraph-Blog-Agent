@@ -28,7 +28,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements-dev.txt   # or requirements.txt for runtime-only
 
-cp .env .env
+cp .env.example .env
 # then edit .env and set GROQ_API_KEY (free tier: https://console.groq.com)
 ```
 
@@ -42,6 +42,21 @@ uvicorn app.main:app --reload
 ```
 
 Swagger UI: http://127.0.0.1:8000/docs
+
+## Frontend
+
+A React (Vite + Tailwind) UI lives in `frontend/` — a form to submit a topic or YouTube URL,
+with an optional target language, and a rendered view of the generated (and translated) blog post.
+
+```bash
+cd frontend
+npm install
+cp .env.example .env   # VITE_API_BASE_URL defaults to http://127.0.0.1:8000
+npm run dev
+```
+
+Open http://localhost:5173. The backend must be running (see above) — its CORS config
+(`app/main.py`) already allows the Vite dev server's origin.
 
 ## API
 

@@ -20,7 +20,7 @@ class FakeChatModel:
     def invoke(self, prompt):
         return SimpleNamespace(content="# Fake Blog Title\n\nThis is fake generated blog content.")
 
-    def with_structured_output(self, schema):
+    def with_structured_output(self, schema, **kwargs):
         if schema is graph_nodes.TitleSuggestions:
             return _StructuredStub(
                 graph_nodes.TitleSuggestions(

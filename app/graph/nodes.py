@@ -73,10 +73,13 @@ def fetch_transcript_node(state: GraphState) -> GraphState:
 
 @_handle_llm_errors("brainstorm_titles")
 def brainstorm_titles_node(state: GraphState) -> GraphState:
-    llm = get_llm(0.9).with_structured_output(TitleSuggestions)
+    llm = get_llm(0.9).with_structured_output(TitleSuggestions, method="json_mode")
     prompt = (
         "You are a blog title strategist. Based on the following source material, propose 3 to 5 "
         "engaging, SEO-friendly blog post titles, then pick the single best one.\n\n"
+        "Respond with a single JSON object with exactly these keys: "
+        '"titles" (an array of 3 to 5 strings) and "selected_title" (a string, must be one of the '
+        "items in titles). Return JSON only, no other text.\n\n"
         f"Source material:\n{_source_material(state)[:6000]}"
     )
     result: TitleSuggestions = llm.invoke(prompt)
@@ -88,8 +91,10 @@ def generate_content_node(state: GraphState) -> GraphState:
     llm = get_llm(0.5)
     prompt = (
         "You are a professional blog writer. Write a complete, well-structured blog post in Markdown "
-        f'titled "{state["selected_title"]}".\n\n'
-        "Use headings, short paragraphs, and a bullet list where useful. Base it on this source material:\n\n"
+        f'for the title "{state["selected_title"]}". The title is displayed separately by the caller, '
+        "so do NOT include it as a heading in your output — start directly with the body, using "
+        "second-level (##) headings or lower for any section headings. Use short paragraphs and a "
+        "bullet list where useful. Base it on this source material:\n\n"
         f"{_source_material(state)[:6000]}"
     )
     content = llm.invoke(prompt).content
@@ -98,10 +103,14 @@ def generate_content_node(state: GraphState) -> GraphState:
 
 @_handle_llm_errors("translate")
 def translate_node(state: GraphState) -> GraphState:
-    llm = get_llm(0.2).with_structured_output(TranslatedBlog)
+    llm = get_llm(0.2).with_structured_output(TranslatedBlog, method="json_mode")
     prompt = (
         f"Translate the following blog post title and Markdown body into {state['target_language']}. "
         "Preserve the Markdown structure (headings, lists, emphasis) exactly.\n\n"
+        "Respond with a single JSON object with exactly these keys: "
+        '"translated_title" (a string) and "translated_content" (a string containing the full '
+        "translated Markdown body). Escape all quotes and special characters so the JSON is valid. "
+        "Return JSON only, no other text.\n\n"
         f"Title: {state['selected_title']}\n\n"
         f"Body:\n{state['blog_content']}"
     )
