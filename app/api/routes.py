@@ -1,9 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+import groq
+from fastapi import APIRouter, Depends, HTTPException, UploadFile
 
 from app.config import SUPPORTED_LANGUAGES
 from app.graph.builder import get_compiled_graph
 from app.graph.state import GraphState
-from app.models.schemas import GenerateRequest, GenerateResponse
+from app.models.schemas import GenerateRequest, GenerateResponse, TranscribeUploadResponse
+from app.services.transcription import MAX_UPLOAD_BYTES, transcribe_audio
 
 router = APIRouter()
 
@@ -28,6 +30,29 @@ def health():
 @router.get("/languages")
 def languages():
     return {"supported_languages": SUPPORTED_LANGUAGES}
+
+
+@router.post("/transcribe-upload", response_model=TranscribeUploadResponse)
+async def transcribe_upload(file: UploadFile):
+    file_bytes = await file.read()
+
+    if not file_bytes:
+        raise HTTPException(status_code=422, detail="Uploaded file is empty.")
+    if len(file_bytes) > MAX_UPLOAD_BYTES:
+        raise HTTPException(
+            status_code=413,
+            detail=f"File too large ({len(file_bytes) // (1024 * 1024)}MB). Max size is "
+            f"{MAX_UPLOAD_BYTES // (1024 * 1024)}MB — please upload a shorter clip.",
+        )
+
+    try:
+        transcript = transcribe_audio(file.filename or "upload", file_bytes)
+    except groq.RateLimitError as exc:
+        raise HTTPException(status_code=503, detail=f"Groq rate limit exceeded: {exc}") from exc
+    except groq.APIError as exc:
+        raise HTTPException(status_code=502, detail=f"Transcription failed: {exc}") from exc
+
+    return TranscribeUploadResponse(transcript=transcript)
 
 
 @router.post("/generate", response_model=GenerateResponse)

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { generateBlog } from "./api";
+import { generateBlog, transcribeUpload } from "./api";
 import GenerateForm from "./components/GenerateForm.jsx";
 import ResultView from "./components/ResultView.jsx";
 import ErrorBanner from "./components/ErrorBanner.jsx";
@@ -14,7 +14,16 @@ export default function App() {
     setError(null);
     setResult(null);
     try {
-      const data = await generateBlog(payload);
+      let finalPayload = payload;
+      if (payload.input_type === "upload") {
+        const transcript = await transcribeUpload(payload.file);
+        finalPayload = {
+          input_type: "topic",
+          content: transcript,
+          target_language: payload.target_language,
+        };
+      }
+      const data = await generateBlog(finalPayload);
       setResult(data);
     } catch (err) {
       setError(err.message);
@@ -34,7 +43,8 @@ export default function App() {
             Blog Generation Agent
           </h1>
           <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-ink/60">
-            Turn a topic or a YouTube video into a finished blog post — with optional translation.
+            Turn a topic, a YouTube video, or an uploaded video/audio file into a finished blog post — with
+            optional translation.
           </p>
           <div className="mx-auto mt-8 h-px w-16 bg-accent/40" />
         </header>

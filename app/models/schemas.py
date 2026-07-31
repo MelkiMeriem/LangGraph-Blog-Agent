@@ -21,6 +21,10 @@ class GenerateRequest(BaseModel):
         return normalized
 
 
+class TranscribeUploadResponse(BaseModel):
+    transcript: str
+
+
 class GenerateResponse(BaseModel):
     input_type: str
     video_id: str | None = None

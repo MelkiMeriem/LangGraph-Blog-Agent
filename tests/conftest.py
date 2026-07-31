@@ -5,6 +5,7 @@ import pytest
 
 os.environ.setdefault("GROQ_API_KEY", "test-dummy-key")
 
+from app.api import routes as api_routes  # noqa: E402
 from app.graph import nodes as graph_nodes  # noqa: E402
 
 
@@ -49,4 +50,13 @@ def fake_transcript(monkeypatch):
         graph_nodes,
         "fetch_transcript_text",
         lambda video_id, max_chars: "This is a fake transcript about test automation.",
+    )
+
+
+@pytest.fixture
+def fake_transcription(monkeypatch):
+    monkeypatch.setattr(
+        api_routes,
+        "transcribe_audio",
+        lambda filename, file_bytes: "This is a fake transcript from an uploaded video.",
     )

@@ -9,6 +9,23 @@ export async function fetchLanguages() {
   return data.supported_languages;
 }
 
+export async function transcribeUpload(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetch(`${API_BASE_URL}/transcribe-upload`, {
+    method: "POST",
+    body: formData,
+  });
+  const data = await res.json();
+  if (!res.ok) {
+    const detail = Array.isArray(data.detail)
+      ? data.detail.map((d) => d.msg).join("; ")
+      : data.detail;
+    throw new Error(detail || `Upload failed with status ${res.status}`);
+  }
+  return data.transcript;
+}
+
 export async function generateBlog(payload) {
   const res = await fetch(`${API_BASE_URL}/generate`, {
     method: "POST",

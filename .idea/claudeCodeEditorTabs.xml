@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ClaudeCodeEditorTabs">
+    <option name="activeSessionId" value="fb77ed14-7518-4d18-9020-6827fffb0f33" />
+    <option name="openSessionIds">
+      <list>
+        <option value="8205b63a-1aec-4fdc-b6d1-ddee2a81d5c4" />
+        <option value="9e043e53-ce34-4de7-bb95-28a0c498c183" />
+        <option value="9ebf6e4b-d505-43ec-ac8b-5331c7239bb0" />
+        <option value="b5281e40-fd2c-41e5-807c-ab1cf22fc4e8" />
+        <option value="f47c5981-9b78-4c23-b8e3-3dc34b66aa2e" />
+        <option value="fb77ed14-7518-4d18-9020-6827fffb0f33" />
+      </list>
+    </option>
+    <option name="sessionPaths">
+      <map>
+        <entry key="8205b63a-1aec-4fdc-b6d1-ddee2a81d5c4" value="/sessions/new" />
+        <entry key="9e043e53-ce34-4de7-bb95-28a0c498c183" value="/sessions/0d1a7bc4-44e3-43c4-b4f2-9d2e9ee9c15f" />
+        <entry key="9ebf6e4b-d505-43ec-ac8b-5331c7239bb0" value="/sessions/new" />
+        <entry key="b5281e40-fd2c-41e5-807c-ab1cf22fc4e8" value="/sessions/1761d390-cdc8-4a8f-b2c1-5ffc0a00ad1e" />
+        <entry key="f47c5981-9b78-4c23-b8e3-3dc34b66aa2e" value="/sessions/new" />
+        <entry key="fb77ed14-7518-4d18-9020-6827fffb0f33" value="/sessions/b864f88c-3113-452b-8c89-b14a4df9d245" />
+      </map>
+    </option>
+    <option name="sessionTitles">
+      <map>
+        <entry key="8205b63a-1aec-4fdc-b6d1-ddee2a81d5c4" value="Claude Code" />
+        <entry key="9e043e53-ce34-4de7-bb95-28a0c498c183" value="hello" />
+        <entry key="9ebf6e4b-d505-43ec-ac8b-5331c7239bb0" value="Claude Code" />
+        <entry key="b5281e40-fd2c-41e5-807c-ab1cf22fc4e8" value="can u read the project and update the readme with" />
+        <entry key="f47c5981-9b78-4c23-b8e3-3dc34b66aa2e" value="Claude Code" />
+        <entry key="fb77ed14-7518-4d18-9020-6827fffb0f33" value="comment ajouter une image en .md" />
+      </map>
+    </option>
+  </component>
+</project>

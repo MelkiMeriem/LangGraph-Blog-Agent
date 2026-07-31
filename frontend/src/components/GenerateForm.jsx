@@ -1,9 +1,16 @@
 import { useEffect, useState } from "react";
 import { fetchLanguages } from "../api";
 
+const TAB_LABELS = {
+  topic: "Topic",
+  youtube: "YouTube URL",
+  upload: "Upload video",
+};
+
 export default function GenerateForm({ onGenerate, loading }) {
   const [inputType, setInputType] = useState("topic");
   const [content, setContent] = useState("");
+  const [videoFile, setVideoFile] = useState(null);
   const [targetLanguage, setTargetLanguage] = useState("");
   const [languages, setLanguages] = useState([]);
 
@@ -15,6 +22,14 @@ export default function GenerateForm({ onGenerate, loading }) {
 
   function handleSubmit(e) {
     e.preventDefault();
+    if (inputType === "upload") {
+      onGenerate({
+        input_type: "upload",
+        file: videoFile,
+        target_language: targetLanguage || null,
+      });
+      return;
+    }
     onGenerate({
       input_type: inputType,
       content,
@@ -22,10 +37,12 @@ export default function GenerateForm({ onGenerate, loading }) {
     });
   }
 
+  const canSubmit = inputType === "upload" ? Boolean(videoFile) : Boolean(content.trim());
+
   return (
     <form onSubmit={handleSubmit} className="border-t border-ink/10 pt-10">
       <div className="mb-8 flex gap-6 text-sm">
-        {["topic", "youtube"].map((type) => (
+        {Object.keys(TAB_LABELS).map((type) => (
           <button
             key={type}
             type="button"
@@ -34,7 +51,7 @@ export default function GenerateForm({ onGenerate, loading }) {
               inputType === type ? "text-ink" : "text-ink/40 hover:text-ink/70"
             }`}
           >
-            {type === "topic" ? "Topic" : "YouTube URL"}
+            {TAB_LABELS[type]}
             {inputType === type && <span className="absolute inset-x-0 -bottom-px h-px bg-accent" />}
           </button>
         ))}
@@ -42,18 +59,29 @@ export default function GenerateForm({ onGenerate, loading }) {
 
       <div className="mb-8">
         <label className="mb-2 block text-xs font-medium uppercase tracking-wide text-ink/50">
-          {inputType === "topic" ? "Blog topic" : "YouTube video URL"}
+          {inputType === "topic" && "Blog topic"}
+          {inputType === "youtube" && "YouTube video URL"}
+          {inputType === "upload" && "Video or audio file"}
         </label>
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          required
-          rows={inputType === "topic" ? 3 : 1}
-          placeholder={
-            inputType === "topic" ? "e.g. The history of coffee" : "https://www.youtube.com/watch?v=..."
-          }
-          className="w-full resize-none border-b border-ink/15 bg-transparent py-2 font-serif text-lg text-ink placeholder:text-ink/30 focus:border-accent focus:outline-none"
-        />
+        {inputType === "upload" ? (
+          <input
+            type="file"
+            accept="video/*,audio/*"
+            onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
+            className="w-full border-b border-ink/15 bg-transparent py-2 text-sm text-ink file:mr-4 file:border-0 file:bg-accent/10 file:px-4 file:py-2 file:text-xs file:font-medium file:uppercase file:tracking-wide file:text-accent focus:border-accent focus:outline-none"
+          />
+        ) : (
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            required
+            rows={inputType === "topic" ? 3 : 1}
+            placeholder={
+              inputType === "topic" ? "e.g. The history of coffee" : "https://www.youtube.com/watch?v=..."
+            }
+            className="w-full resize-none border-b border-ink/15 bg-transparent py-2 font-serif text-lg text-ink placeholder:text-ink/30 focus:border-accent focus:outline-none"
+          />
+        )}
       </div>
 
       <div className="mb-10">
@@ -76,7 +104,7 @@ export default function GenerateForm({ onGenerate, loading }) {
 
       <button
         type="submit"
-        disabled={loading || !content.trim()}
+        disabled={loading || !canSubmit}
         className="inline-flex items-center gap-2 bg-accent px-6 py-3 text-sm font-medium uppercase tracking-wide text-paper transition-colors hover:bg-accent-dark disabled:cursor-not-allowed disabled:bg-ink/20"
       >
         {loading && (
